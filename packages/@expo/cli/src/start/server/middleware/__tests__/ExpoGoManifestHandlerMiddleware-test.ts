@@ -303,4 +303,27 @@ describe('_getManifestResponseAsync', () => {
 
     expect(getProjectAsync).toBeCalledTimes(1);
   });
+
+  it('returns text/plain when explicitlyPrefersMultipartMixed is false', async () => {
+    const middleware = createMiddleware();
+    APISettings.isOffline = true;
+    const results = await middleware._getManifestResponseAsync({
+      explicitlyPrefersMultipartMixed: false,
+      platform: 'android',
+      acceptSignature: true,
+      hostname: 'localhost',
+    });
+    expect(results.version).toBe('45.0.0');
+
+    expect(results.headers).toEqual(
+      new Map(
+        Object.entries({
+          'expo-protocol-version': 0,
+          'expo-sfv-version': 0,
+          'cache-control': 'private, max-age=0',
+          'content-type': 'text/plain',
+        })
+      )
+    );
+  });
 });

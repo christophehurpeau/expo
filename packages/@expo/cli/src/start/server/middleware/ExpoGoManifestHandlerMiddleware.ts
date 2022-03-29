@@ -1,5 +1,6 @@
 import { ExpoUpdatesManifest } from '@expo/config';
 import { Updates } from '@expo/config-plugins';
+import accepts from 'accepts';
 import assert from 'assert';
 import FormData from 'form-data';
 import { v4 as uuidv4 } from 'uuid';
@@ -35,8 +36,9 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     // accept them with "accept: */*". To make it easier to debug manifest responses by visiting their
     // URLs in a browser, we denote the response as "text/plain" if the user agent appears not to be
     // an Expo Updates client.
+    const accept = accepts(req);
     const explicitlyPrefersMultipartMixed =
-      req.headers['accept']?.includes('multipart/mixed') ?? false;
+      accept.types(['unknown/unknown', 'multipart/mixed']) === 'multipart/mixed';
 
     return {
       explicitlyPrefersMultipartMixed,
